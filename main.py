@@ -28,6 +28,7 @@ parser.add_argument("-wd", type=float, default=1e-4)
 parser.add_argument("-bn", type=str2bool, default=False)
 parser.add_argument("-ep", type=int, default=100)
 parser.add_argument("-bs", type=int, default=128)
+parser.add_argument("-shift", type=float, default=0.125)
 params = parser.parse_args()
 
 model = ResnetBuilder.build_resnet_cifar10(params.ly, use_bn=params.bn)
