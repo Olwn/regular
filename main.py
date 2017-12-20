@@ -2,6 +2,7 @@ import argparse
 import os
 from datetime import datetime
 import keras
+from keras.backend import set_session
 from keras.callbacks import LearningRateScheduler, TensorBoard, CSVLogger, ModelCheckpoint
 from keras.optimizers import SGD
 from keras.datasets import cifar10
@@ -31,14 +32,21 @@ parser.add_argument("-bs", type=int, default=128)
 parser.add_argument("-shift", type=float, default=0.125)
 params = parser.parse_args()
 
-model = ResnetBuilder.build_resnet_cifar10(params.ly, use_bn=params.bn)
+# gpu setting
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ["CUDA_VISIBLE_DEVICES"] = params.gpu
+import tensorflow as tf
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = params.mem
+set_session(tf.Session(config=config))
 
+
+model = ResnetBuilder.build_resnet_cifar10(params.ly, use_bn=params.bn)
 sgd = SGD(momentum=0.9)
 model.compile(loss='categorical_crossentropy', optimizer=sgd)
 
-
 dir_name = "e" + datetime.now().strftime("%m%d-%H-%M-%S") + \
-           "layers" + str(params.ly) + \
+           "l" + str(params.ly) + \
            "_ing"
 csv_logger = CSVLogger(os.path.join(dir_name, 'log.csv'))
 lr_scheduler = LearningRateScheduler(lambda x: 0.05 if x < 60 else 0.03 if x < 80 else 0.005)
@@ -65,4 +73,4 @@ losses = model.evaluate(x_test, y_test, batch_size=params.batch_size)
 print(losses)
 with open(os.path.join(dir_name, 'config'), 'a') as wf:
     wf.write(str(losses) + '\n')
-os.rename(dir_name, dir_name.replace('_ing', '_completed'))
+os.rename(dir_name, dir_name.replace('_ing', '_fin'))
