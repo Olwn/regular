@@ -30,6 +30,7 @@ parser.add_argument("-bn", type=str2bool, default=False)
 parser.add_argument("-ep", type=int, default=100)
 parser.add_argument("-bs", type=int, default=128)
 parser.add_argument("-shift", type=float, default=0.125)
+parser.add_argument("-gpu", type=float, default='1')
 params = parser.parse_args()
 
 # gpu setting
