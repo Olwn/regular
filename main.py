@@ -30,7 +30,8 @@ parser.add_argument("-bn", type=str2bool, default=False)
 parser.add_argument("-ep", type=int, default=100)
 parser.add_argument("-bs", type=int, default=128)
 parser.add_argument("-shift", type=float, default=0.125)
-parser.add_argument("-gpu", type=float, default='1')
+parser.add_argument("-gpu", type=str, default='1')
+parser.add_argument("-mem", type=float, default=0.25)
 params = parser.parse_args()
 
 # gpu setting
@@ -44,7 +45,7 @@ set_session(tf.Session(config=config))
 
 model = ResnetBuilder.build_resnet_cifar10(params.ly, use_bn=params.bn)
 sgd = SGD(momentum=0.9)
-model.compile(loss='categorical_crossentropy', optimizer=sgd)
+model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
 
 dir_name = "e" + datetime.now().strftime("%m%d-%H-%M-%S") + \
            "l" + str(params.ly) + \
